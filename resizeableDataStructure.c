@@ -14,19 +14,19 @@ void createEmptyWordList(wordList *words) {
     words->stringArray = malloc(sizeof(char*)*words->array_size);
 }
 
-void expandArray(int *array_size, char **stringArray) {
-    *array_size = (*array_size * 2);
-    stringArray = realloc(*stringArray, sizeof(char*)* *array_size);
+void expandArray(wordList *words) {
+    words->array_size = (words->array_size * 2);
+    words->stringArray = realloc(words->stringArray, sizeof(char*) * words->array_size);
 }
 
-void addWord(wordList *words, char *buffer, char **stringArray, int array_filled_num, int array_size) {
+void addWord(wordList *words, char *buffer) {
     int temporary = strlen(buffer) + 1;
     char *temporaryString = malloc(sizeof(char) * temporary);
     strncpy(temporaryString, buffer, temporary);
     if (words->array_filled_num == words->array_size) {
-        expandArray(&words->array_size, words->stringArray);
+        expandArray(words);
     }
-    stringArray[array_filled_num] = strdup(temporaryString);
+    words->stringArray[words->array_filled_num] = strdup(temporaryString);
 }
 
 int wordListLength(wordList words) {
@@ -41,7 +41,7 @@ void getWordList(wordList *words) {
     words->wordListFile = fopen("/home/david/Desktop/hangmanCPort/wordList.txt", "r");
     char buffer[256];
     while (fgets(buffer, 256, words->wordListFile) != NULL) {
-        addWord(words, buffer, words->stringArray, words->array_filled_num, words->array_size);
+        addWord(words, buffer);
         printf("%d\n", words->array_size);
         printf("%s\n", words->stringArray[words->array_filled_num]);
         words->array_filled_num++;
