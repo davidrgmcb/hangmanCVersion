@@ -1,36 +1,26 @@
-#include <stdio.h>
+/*#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h> //randomizer seed
 #include <ctype.h>
 
-int hangmanStrikes = 0; //This is at least simple, increment this up every time they screw up
-char *guess;
-FILE *wordListFile; // 2D resizing array of resizeable char arrays?
-char *answer;
-char *randomWordList[];
+void seedRandomizer() {
+    time_t startTime;
+    srand((unsigned) time(&startTime));
+}//takes the time and uses it to seed rand or else the words get pretty predictable.
 
-//func to remove last non \0 character from string
-//func that resizes an array
-//
 
-char getWord()
-{
-    wordListFile = fopen("/usr/share/dict/words", "r");
-    //while fgets(randomWordList, 
-    //
-    fclose(wordListFile);
-}
 
-//type? checkGuess(guess)
-//{
-    /* probably a for loop through array 1, printing matches into array, easier said than done but at least their lengths are known and they match.
-//}*/
+
+
+
+
+
 
 /*
  * 
  * char enforceLowerCase(guess)
- * just takes guess and makes it equal itself in lower case. guess = tolower(guess); or somesuch*/
+ * just takes guess and makes it equal itself in lower case. guess = tolower(guess); or somesuch maybe do this all in one like in python version*/
 /*
  * void addToGuessed(arrayOfGuessedLetters)
  * append to end of array, start at n = 0 and incrementt value of n, could be lazy and make the array sized 26 or could get fancy and make it expanding
@@ -42,14 +32,6 @@ char getWord()
   /*
    * 
 
-void hangman()
-{
-    guess = malloc(2);
-    printf("Please enter a guess\n");
-    guess = fgets(guess, sizeof(guess + 1), stdin); // change fgets fgetc?
-    hangmanStrikes++;
-    free (guess);
-}
 
 int main()
 {
@@ -60,4 +42,4 @@ int main()
     }
     
     return 0;
-}
+}*/
