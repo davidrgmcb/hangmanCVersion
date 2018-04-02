@@ -9,13 +9,8 @@ int arraySize;
 int highestFilledArrayAddress;
 }wordList;
 
-char *hangmanGuess;
-int listLength;
-int randomWordAddress;
-char *hangmanAnswer;//put these in a struct later,gameState maybe, also give them initialized values
-
 #define ARRAY_FILL_START 0
-#define BASE_arraySize 10
+#define BASE_ARRAY_SIZE 10
 
 void createEmptyWordList(wordList *words);
 

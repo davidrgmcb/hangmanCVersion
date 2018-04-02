@@ -14,7 +14,7 @@ void getWordList(wordList *words) {
 
 void createEmptyWordList(wordList *words) {
     words->highestFilledArrayAddress = ARRAY_FILL_START; //Variable to track how full the array is, necessary given the unclear nature of what file will ofer that list
-    words->arraySize = BASE_arraySize;
+    words->arraySize = BASE_ARRAY_SIZE;
     words->possibleAnswers = malloc(sizeof(char*)*words->arraySize);
 }//Constructs a struct to hold the list of words to be chosen from at random
 
