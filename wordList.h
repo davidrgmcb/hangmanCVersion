@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include "gameState.h"
 
 typedef struct {
 FILE *wordListFile;
@@ -22,6 +23,6 @@ int wordListLength(wordList words);
 
 int getRandomAddress (int listLength);
 
-char * getWord(wordList words, int randomWordAddress);
+void getWord(wordList words, gameState *game);
 
 void getWordList(wordList *words);

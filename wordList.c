@@ -37,10 +37,7 @@ int wordListLength(wordList words) {
     return words.highestFilledArrayAddress;
 }//Just a getter to allow the number of words currently in the list to be chosen from to be known
 
-int getRandomAddress (int listLength) {
-    return rand() % (listLength - 1);
-}//Gets a random number within the size of the possible words array to allow for selection of a random word
-
-char * getWord(wordList words, int randomWordAddress) {
-    return words.possibleAnswers[randomWordAddress];
-}//takes the random number returned by getRandomAddress and uses it to get a random word
+void getWord(wordList words, gameState *game) {
+    int answer = rand() % (words.highestFilledArrayAddress - 1);
+    game->hangmanAnswer = strdup(words.possibleAnswers[answer]);
+}//gets a random word out of the wodlist and copies it into hangman answer in the game struct

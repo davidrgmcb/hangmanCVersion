@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "wordList.h"
-#include "gameState.h"
+
 
 void trimEndOfString(char *hangmanAnswer) { //cleans newlines off the string getAnswer returns
     int ii = 0;
@@ -21,32 +22,40 @@ void seedRandomizer() {  //seeds srand so that a different word is actually sele
     srand((unsigned) time(&startTime));
 }
 
-void createGameState(gameState *game) { //makes room to store guesses, sets a default value and an array to store already guessed letters
-    game->hangmanGuess = malloc(1024);
-    game->hangmanGuess[0] = 'a';
-    game->hangmanCorrect = malloc(sizeof(char) * (answerLength));
-    game->hangmanAlreadyGuessed[26];
-    for(int ii = 0; ii < answerLength; ii++) {
-        game->hangmanCorrect[ii] = '_';
+void answerLowerCase(gameState *game) {
+    for(int ii = 0; ii < game->answerLength; ii++) {
+        game->hangmanAnswer[ii] = tolower(game->hangmanAnswer[ii]);
     }
-    game->numberOfGuesses = 0;
 }
 
-void getAnswer() {
+void getAnswer(gameState *game) {
     seedRandomizer();
     wordList words;
     createEmptyWordList(&words);
     getWordList(&words);
     listLength = wordListLength(words);
-    randomWordAddress = getRandomAddress(listLength);
+    //randomWordAddress = getRandomAddress(listLength);
     //printf("%d\n", randomWordAddress);
-    hangmanAnswer = getWord(words, randomWordAddress);
+    getWord(words, game);
     //answerLength = strlen(hangmanAnswer);
-    printf("%s\n", hangmanAnswer);
-    trimEndOfString(hangmanAnswer);
-    answerLength = strlen(hangmanAnswer);
+    printf("%s\n", game->hangmanAnswer);
+    trimEndOfString(game->hangmanAnswer);
+    game->answerLength = strlen(game->hangmanAnswer);
+    //answerLowerCase(game);
     fclose(words.wordListFile);
 }//Once answer is determined wordlist is a drain, fclose and free seem prudent but valgrind is reporting unfreed memory when I free(words->possibleAnswers) so definitely need more idea what that free will entail
+
+void createGameState(gameState *game) { //makes room to store guesses, sets a default value and an array to store already guessed letters
+    getAnswer(game);
+    game->hangmanGuess = malloc(1024);
+    game->hangmanGuess[0] = 'a';
+    game->hangmanCorrect = malloc(sizeof(char) * (game->answerLength));
+    game->hangmanAlreadyGuessed[26];
+    for(int ii = 0; ii < game->answerLength; ii++) {
+        game->hangmanCorrect[ii] = '_';
+    }
+    game->numberOfGuesses = 0;
+}
 
 void trimGuess(gameState game) {
     if ((int)strlen(game.hangmanGuess) > 1) {
@@ -74,11 +83,12 @@ void getGuess(gameState game) {
 int main() {
     //Move this inside of the gameState whenever that becomes a proper structure
     int numberOfGuesses = 0;//Just for testing, will go away
-    getAnswer();
     gameState game;
     createGameState(&game);
+    answerLowerCase(&game);
     while (numberOfGuesses <= 4) { //This is off by one somehow, will have to work that out
         getGuess(game);
+        printf("%s\n", game.hangmanAnswer);
         printf("%s\n", game.hangmanGuess);
         int guessLength = strlen(game.hangmanGuess);
         printf("%d\n", guessLength);
@@ -86,7 +96,7 @@ int main() {
     }
     //printf("%s\n", hangmanAnswer);
     //printf("%d\n", (int)strlen(hangmanAnswer));
-    trimEndOfString(hangmanAnswer);
+    trimEndOfString(game.hangmanAnswer);
     //printf("%s\n", hangmanAnswer);
     //printf("%d\n", (int)strlen(hangmanAnswer));
 }
