@@ -6,11 +6,11 @@
 #include "wordList.h"
 
 
-void trimEndOfString(char *hangmanAnswer) { //cleans newlines off the string getAnswer returns, not sure when or how this broke
+void trimEndOfString(gameState *game) { //cleans newlines off the string getAnswer returns, not sure when or how this broke
     int ii = 0;
-    while (hangmanAnswer[ii] != '\0') {
-        if (hangmanAnswer[ii] == '\n') {
-            hangmanAnswer[ii] = '\0';
+    while (game->hangmanAnswer[ii] != '\0') {
+        if (game->hangmanAnswer[ii] == '\n') {
+            game->hangmanAnswer[ii] = '\0';
             break;
         }
         ii++;
@@ -37,7 +37,7 @@ void getAnswer(gameState *game) {
     //randomWordAddress = getRandomAddress(listLength);
     //printf("%d\n", randomWordAddress);
     getWord(words, game);
-    trimEndOfString(game->hangmanAnswer);
+    trimEndOfString(game);
     //answerLength = strlen(hangmanAnswer);
     printf("%s\n", game->hangmanAnswer);
     game->answerLength = strlen(game->hangmanAnswer);
@@ -52,7 +52,7 @@ void createGameState(gameState *game) { //makes room to store guesses, sets a de
     game->hangmanGuess[0] = 'a';
     game->hangmanCorrect = malloc(sizeof(char) * (game->answerLength));
     game->hangmanAlreadyGuessed = malloc(26);
-    game->isEnd = (-1);
+    game->isEnd = 0;
     for(int ii = 0; ii < game->answerLength; ii++) {
         game->hangmanCorrect[ii] = '_';
     }
@@ -107,13 +107,19 @@ void showCorrectGuesses(gameState game) {
 }
 
 void getUnderlines(gameState game) {
-    for (int letter = 0; letter <= game.answerLength; letter++) {
+    for (int letter = 0; letter < game.answerLength; letter++) {
         game.hangmanCorrect[letter] = '_';
     }
 }
 
 void isGameOver(gameState *game) {
-    game->isEnd = strncmp(game->hangmanAnswer, game->hangmanCorrect, 1000);
+    for (int letter = 0; letter < game->answerLength; letter++) {
+        //printf("%d%s%s\n", game->answerLength, game->hangmanCorrect, game->hangmanAnswer);
+        if ((game->hangmanCorrect[letter]) != (game->hangmanAnswer[letter])) {
+            return;
+        }
+    }
+    game->isEnd = 1;
 }
 
 int main() {
@@ -124,7 +130,7 @@ int main() {
     //trimEndOfString(game.hangmanAnswer);
     getUnderlines(game);
     addApostrophes(game);
-    while ((game.hangmanStrikes <= 7) && (game.isEnd != 0)) { //This doesn't quite work, hopefully other bugs resoling will fix
+    while ((game.hangmanStrikes <= 7) && (!game.isEnd)) { //This doesn't quite work, hopefully other bugs resoling will fix
         getGuess(game);
         showCorrectGuesses(game);
         printf("%s\n", game.hangmanAnswer);
