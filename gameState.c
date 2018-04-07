@@ -6,7 +6,7 @@
 #include "wordList.h"
 
 
-void trimEndOfString(char *hangmanAnswer) { //cleans newlines off the string getAnswer returns
+void trimEndOfString(char *hangmanAnswer) { //cleans newlines off the string getAnswer returns, not sure when or how this broke
     int ii = 0;
     while (hangmanAnswer[ii] != '\0') {
         if (hangmanAnswer[ii] == '\n') {
@@ -124,7 +124,7 @@ int main() {
     //trimEndOfString(game.hangmanAnswer);
     getUnderlines(game);
     addApostrophes(game);
-    while (game.hangmanStrikes <= 7) { //This is off by one somehow, will have to work that out
+    while ((game.hangmanStrikes <= 7) && (game.isEnd != 0)) { //This doesn't quite work, hopefully other bugs resoling will fix
         getGuess(game);
         showCorrectGuesses(game);
         printf("%s\n", game.hangmanAnswer);
@@ -136,9 +136,6 @@ int main() {
         showCorrectGuesses(game);
         isGameOver(game);
         printf("%d\n", game.isEnd);//This keeps returning 0 before it ought to which doesn't trigger the break anyway, very odd
-        if (game.isEnd = 0) {
-            break;//not sure if this can ever break out of botht he while loop and the if, may have to restructure
-        }
         //++numberOfGuesses;
     }
     //printf("%s\n", hangmanAnswer);
