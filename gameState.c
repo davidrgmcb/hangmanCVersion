@@ -76,16 +76,16 @@ void getGuess(gameState game) {
     game.numberOfGuesses++;
 }
 
-void testGuess(gameState game) {
-    game.isGuessCorrect = 0;
-    for (int letter = 0; letter < game.answerLength; letter++) {
-        if (game.hangmanGuess[0] == game.hangmanAnswer[letter]) {
-            game.hangmanCorrect[letter] = game.hangmanGuess[0]; //hangmanCorrect is a dynamically allocated char array that is declared with the answerLength size
-            game.isGuessCorrect = 1; //a bool, may need to be more clever, not sure how far this value exists outside scope of this for loop
+void testGuess(gameState *game) {
+    game->isGuessCorrect = 0;
+    for (int letter = 0; letter < game->answerLength; letter++) {
+        if (game->hangmanGuess[0] == game->hangmanAnswer[letter]) {
+            game->hangmanCorrect[letter] = game->hangmanGuess[0]; //hangmanCorrect is a dynamically allocated char array that is declared with the answerLength size
+            game->isGuessCorrect = 1; //a bool, may need to be more clever, not sure how far this value exists outside scope of this for loop
         }
     }
-    if (game.isGuessCorrect == 0) { //doesn't work, not sure why yet
-        game.hangmanStrikes++; //Like in python version, strikes is an int, this isn't incrementing for reasons I haen't been able to resole
+    if (game->isGuessCorrect == 0) { //doesn't work, not sure why yet
+        game->hangmanStrikes++; //Like in python version, strikes is an int, this isn't incrementing for reasons I haen't been able to resole
     }
 }
 
@@ -112,8 +112,8 @@ void getUnderlines(gameState game) {
     }
 }
 
-void isGameOver(gameState game) {
-    game.isEnd = strncmp(game.hangmanAnswer, game.hangmanCorrect, 1000);
+void isGameOver(gameState *game) {
+    game->isEnd = strncmp(game->hangmanAnswer, game->hangmanCorrect, 1000);
 }
 
 int main() {
@@ -132,9 +132,9 @@ int main() {
         printf("%d\n", game.hangmanStrikes);
         //int guessLength = strlen(game.hangmanGuess);
         //printf("%d\n", guessLength);
-        testGuess(game);
+        testGuess(&game);
         showCorrectGuesses(game);
-        isGameOver(game);
+        isGameOver(&game);
         printf("%d\n", game.isEnd);//This keeps returning 0 before it ought to which doesn't trigger the break anyway, very odd
         //++numberOfGuesses;
     }
