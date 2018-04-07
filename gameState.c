@@ -33,13 +33,13 @@ void getAnswer(gameState *game) {
     wordList words;
     createEmptyWordList(&words);
     getWordList(&words);
-    listLength = wordListLength(words);
+    //listLength = wordListLength(words);
     //randomWordAddress = getRandomAddress(listLength);
     //printf("%d\n", randomWordAddress);
     getWord(words, game);
+    trimEndOfString(game->hangmanAnswer);
     //answerLength = strlen(hangmanAnswer);
     printf("%s\n", game->hangmanAnswer);
-    trimEndOfString(game->hangmanAnswer);
     game->answerLength = strlen(game->hangmanAnswer);
     //answerLowerCase(game);
     fclose(words.wordListFile);
@@ -47,10 +47,12 @@ void getAnswer(gameState *game) {
 
 void createGameState(gameState *game) { //makes room to store guesses, sets a default value and an array to store already guessed letters
     getAnswer(game);
+    game->hangmanStrikes = 0;
     game->hangmanGuess = malloc(1024);
     game->hangmanGuess[0] = 'a';
     game->hangmanCorrect = malloc(sizeof(char) * (game->answerLength));
-    game->hangmanAlreadyGuessed[26];
+    game->hangmanAlreadyGuessed = malloc(26);
+    game->isEnd = (-1);
     for(int ii = 0; ii < game->answerLength; ii++) {
         game->hangmanCorrect[ii] = '_';
     }
@@ -65,38 +67,87 @@ void trimGuess(gameState game) {
 
 void getGuess(gameState game) {
     game.hangmanGuess = fgets(game.hangmanGuess, 1024, stdin);//gigantobuffer that gets hacked off immediately
+    if (isalpha(game.hangmanGuess[0]) == 0) {
+        printf("Please enter a letter, no numbers or symbols\n");
+        getGuess(game);
+    }
     trimGuess(game);
+    game.hangmanAlreadyGuessed[game.numberOfGuesses] = game.hangmanGuess[0];
+    game.numberOfGuesses++;
 }
 
-/*void testGuess(hangmanGuess) {
-    //hangmanGuessedCorrect = False;
-    for (int letter = 0; i < (int)(sizeof(hangmanAnswer)); ++letter) {
-        if hangmanGuess == hangmanAnswer[letter] {
-            //hangmanCorrectGuesses[letter] = hangmanGuess; hangmanCorrectGuesses is I guess a dynamically allocated char array that is declared with the hangmanAnswerLength size
-            //hangmanGuessedCorrect = True; a bool, may need to be more clever, not sure how far this value exists outside scope of this for loop
+void testGuess(gameState game) {
+    game.isGuessCorrect = 0;
+    for (int letter = 0; letter < game.answerLength; letter++) {
+        if (game.hangmanGuess[0] == game.hangmanAnswer[letter]) {
+            game.hangmanCorrect[letter] = game.hangmanGuess[0]; //hangmanCorrect is a dynamically allocated char array that is declared with the answerLength size
+            game.isGuessCorrect = 1; //a bool, may need to be more clever, not sure how far this value exists outside scope of this for loop
         }
     }
-    //if hangmanGuessedCorrect == False {
-        //hangmanStrikes++; Like in python version, strikes is an int
-}*/
+    if (game.isGuessCorrect == 0) { //doesn't work, not sure why yet
+        game.hangmanStrikes++; //Like in python version, strikes is an int, this isn't incrementing for reasons I haen't been able to resole
+    }
+}
+
+void addApostrophes(gameState game) {
+    for (int letter = 0; letter < game.answerLength; letter++) {
+        if (game.hangmanAnswer[letter] == '\'') {
+            game.hangmanCorrect[letter] = '\''; //just slot in the apostrophes before the game even begins
+        }
+    }
+}
+
+void showCorrectGuesses(gameState game) {
+    for (int letter = 0; letter <= game.answerLength; letter++) {
+        printf("%c", game.hangmanCorrect[letter]);
+        if (letter == game.answerLength) {
+            printf("\n");
+        }
+    }
+}
+
+void getUnderlines(gameState game) {
+    for (int letter = 0; letter <= game.answerLength; letter++) {
+        game.hangmanCorrect[letter] = '_';
+    }
+}
+
+void isGameOver(gameState game) {
+    game.isEnd = strncmp(game.hangmanAnswer, game.hangmanCorrect, 1000);
+}
 
 int main() {
-    //Move this inside of the gameState whenever that becomes a proper structure
-    int numberOfGuesses = 0;//Just for testing, will go away
+    //int numberOfGuesses = 0;//Just for testing, will go away
     gameState game;
     createGameState(&game);
     answerLowerCase(&game);
-    while (numberOfGuesses <= 4) { //This is off by one somehow, will have to work that out
+    //trimEndOfString(game.hangmanAnswer);
+    getUnderlines(game);
+    addApostrophes(game);
+    while (game.hangmanStrikes <= 7) { //This is off by one somehow, will have to work that out
         getGuess(game);
+        showCorrectGuesses(game);
         printf("%s\n", game.hangmanAnswer);
         printf("%s\n", game.hangmanGuess);
-        int guessLength = strlen(game.hangmanGuess);
-        printf("%d\n", guessLength);
-        ++numberOfGuesses;
+        printf("%d\n", game.hangmanStrikes);
+        //int guessLength = strlen(game.hangmanGuess);
+        //printf("%d\n", guessLength);
+        testGuess(game);
+        showCorrectGuesses(game);
+        isGameOver(game);
+        printf("%d\n", game.isEnd);//This keeps returning 0 before it ought to which doesn't trigger the break anyway, very odd
+        if (game.isEnd = 0) {
+            break;//not sure if this can ever break out of botht he while loop and the if, may have to restructure
+        }
+        //++numberOfGuesses;
     }
     //printf("%s\n", hangmanAnswer);
     //printf("%d\n", (int)strlen(hangmanAnswer));
-    trimEndOfString(game.hangmanAnswer);
     //printf("%s\n", hangmanAnswer);
     //printf("%d\n", (int)strlen(hangmanAnswer));
 }
+
+//TODO: Reject non alphabetical guesses
+//TODO: Insert apostrophes automatically
+//TODO: check guess finish
+//Test answers with strcmp
