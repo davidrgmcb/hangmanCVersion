@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include "gameState.h"
 
+#ifndef WORDLIST_H
+#define WORDLIST_H
+
 typedef struct {
 FILE *wordListFile;
 char **words;
@@ -26,3 +29,5 @@ int getRandomAddress (int listLength);
 void getWord(wordList words, gameState *game);
 
 void getWordList(wordList *words);
+
+#endif
