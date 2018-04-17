@@ -86,6 +86,21 @@ void getWordList(wordList *words);
  */
 void destroyWordList(wordList *words);
 
+/** @brief Selects a random answer by seeking a random point in the file
+ * Called in getAnswer if game.randomizationScheme is set to 1
+ * Opens the wordListFile and seeks to the endof it.
+ * Saves that value as an int and rewinds the file pointer to the beginning.
+ * A random point in the file is then picked and saved in fileRand
+ * which is then used as the offset for an fseek call from the beginning of the file.
+ * The char at that point is saved in currentChar which is used to set up a loop
+ * to seek backwards through the file until a newline is found and fgets the following
+ * line. This solution once again presumes 1 word lines seperated by '\n' characters.
+ * Once a valid position is found the resultant fgets is strduped to game.hangmanAnswer
+ * wordListFile is closed in getAnswer.
+ * @param wordList *words, opens wordListFile but otherwise uses little of it
+ *        gameState *game, assigns hangmanAnswer.
+ * @return Void
+ */
 void seekWord(wordList *words, gameState *game);
 
 #endif
