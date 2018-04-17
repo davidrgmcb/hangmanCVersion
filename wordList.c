@@ -6,11 +6,9 @@ void getWordList(wordList *words) {
     char buffer[256];
     while (fgets(buffer, 256, words->wordListFile) != NULL) {
         addWord(words, buffer);
-        //printf("%d\n", words->arraySize);
-        //printf("%s\n", words->possibleAnswers[words->highestFilledArrayAddress]);
         words->highestFilledArrayAddress++;
         }
-}//opens a file and calls addWord to read from it and return a full list of every word presuming each line contains only one
+}
 
 void createEmptyWordList(wordList *words) {
     words->highestFilledArrayAddress = ARRAY_FILL_START; //Variable to track how full the array is, necessary given the unclear nature of what file will ofer that list
@@ -19,13 +17,10 @@ void createEmptyWordList(wordList *words) {
 }//Constructs a struct to hold the list of words to be chosen from at random
 
 void addWord(wordList *words, char *buffer) {
-    int temporary = strlen(buffer) + 1;
-    char *temporaryString = malloc(sizeof(char) * temporary);
-    strncpy(temporaryString, buffer, temporary);
     if (words->highestFilledArrayAddress == words->arraySize) {
         expandArray(words);
     }
-    words->possibleAnswers[words->highestFilledArrayAddress] = strdup(temporaryString);
+    words->possibleAnswers[words->highestFilledArrayAddress] = strdup(buffer);
 }//Goes down wordList and copies at each newline into the array of possible words
 
 void expandArray(wordList *words) {
@@ -38,6 +33,41 @@ int wordListLength(wordList words) {
 }//Just a getter to allow the number of words currently in the list to be chosen from to be known
 
 void getWord(wordList words, gameState *game) {
-    int answer = rand() % (words.highestFilledArrayAddress - 1);
-    game->hangmanAnswer = strdup(words.possibleAnswers[answer]);
-}//gets a random word out of the wodlist and copies it into hangman answer in the game struct
+    game->hangmanAnswer = strdup(words.possibleAnswers[rand() % (words.highestFilledArrayAddress - 1)]);
+    /*
+     * fseek rand point in file
+     * fgets 1 char 
+     * if newline fseek 1 forrward and take that fgets
+     * if not newline fseek 1 back and fgets 1 char and test again
+     * loop till newline
+     * test what happens when you get to beginning of file
+     */
+}//gets a random word out of the wordlist and copies it into hangman answer in the game struct
+
+void seekWord(wordList *words, gameState *game) {
+    words->wordListFile = fopen("/usr/share/dict/words", "r");
+    fseek(words->wordListFile, 0, SEEK_END);
+    int fileLength = ftell(words->wordListFile);
+    //printf("%d", fileLength);
+    char buffer[256];
+    rewind(words->wordListFile);
+    int fileRand = rand() % fileLength -1;
+    fseek(words->wordListFile, 0, (rand() % fileLength - 1));
+    char *currentChar = fgets(buffer, 2, words->wordListFile);
+    while(*currentChar != '\n' || currentChar == NULL){
+        printf("1 %s%ld\n%d", currentChar, ftell(words->wordListFile), fileLength);
+        fseek(words->wordListFile, -2, SEEK_CUR);
+        currentChar = fgets(buffer, 2, words->wordListFile);
+        printf("2 %s%ld\n%d", currentChar, ftell(words->wordListFile), fileRand);
+    }
+    game->hangmanAnswer = fgets(buffer, 256, words->wordListFile);
+    //printf("%s", game->hangmanAnswer);
+    //char fake[] = "unrandom";
+    //game->hangmanAnswer = strdup(fake);
+}
+
+void destroyWordList(wordList *words) {
+    for(int ii = 0; ii < words->highestFilledArrayAddress; ii++) {
+        free(words->possibleAnswers[ii]);
+    }
+}

@@ -3,7 +3,7 @@
  * 
  * This .h file prototypes the gameState struct and all of the associated functions that act on it. Essentially everything about the game
  * minus the core loop itself and the actual construction of a list to pick an answer from and the picking of that answer.
- * The possible answers struct and associated functions live in wordList.h and wordlist.c.
+ * The struct containing possible answers and associated functions live in wordList.h and wordlist.c.
  * 
  * @bug trimEndOfString mysteriously nonfunctional.
  */
@@ -34,6 +34,7 @@ int answerLength;
 int hangmanStrikes;
 int isGuessCorrect;
 int isEnd;
+int randomizationScheme;
 }gameState;
 
 /** @brief Loops through string and replaces newline character with string termination.
@@ -42,7 +43,7 @@ int isEnd;
  * Called when the answer is first obrained from the wordList in getAnswer.
  * (Work out what this does if it encounters no newline)
  * Currently needs debugging.
- * @param gameState *game, specifically acts on char *hangmanAnswer
+ * @param gameState *game, specifically acts on char *hangmanAnswer, terminating the string at first newline
  * @return Void
  */
 void trimEndOfString(gameState *game);
@@ -63,7 +64,7 @@ void seedRandomizer();
  * This one loops through game->correctGuesses to the length of answerLength
  * and assings an underscore for each letter. This is called in createGameState
  * so it can be in place just long enough to be replaced by user guesses.
- * @param gameState *game, acts on char *correctGuesses
+ * @param gameState *game, acts on char *correctGuesses, converting its contents to underscores
  * @return Void
  */
 void getUnderlines(gameState *game);
@@ -74,7 +75,7 @@ void getUnderlines(gameState *game);
  * This one loops through each letter in hangmanAnswer and ensures they're lowercase.
  * This ensures that the player isn't caught off guard by case issues.
  * This one is called in the main game loop to make sure no other alterations are waiting to be made to hangmanAnswer.
- * @param gameState *game, acts on char *hangmanAnswer
+ * @param gameState *game, acts on char *hangmanAnswer calling tolower on every address
  * @return Void
  */
 void answerLowerCase(gameState *game);
@@ -92,7 +93,7 @@ void answerLowerCase(gameState *game);
  * trimEndOfString is described above,
  * answerLength is then assigned now that the final length of the answer should be known.
  * finally the wordList file is closed.
- * @param gameState *game, acts on hangmanAnswer
+ * @param gameState *game, acts on char *hangmanAnswer
  * @return Void
  */
 void getAnswer(gameState *game);
@@ -107,7 +108,9 @@ void getAnswer(gameState *game);
  * wrong and the entire thing somehow runs without a guess but otherwise should go unused.
  * Otherwise they're just logically initiating countup ints at 0.
  * getUnderlines is also called here.
- * @param gameState *game
+ * @param gameState *game, assigns int hangmanStrikes, numberOfGuesses and, isEnd, 
+ *        mallocs char *CorrectGuesses, and char *hangmanAlreadyGuessed, calls
+ *        function that assigns char *hangmanAnswer
  * @return Void
  */
 void createGameState(gameState *game);
@@ -117,7 +120,7 @@ void createGameState(gameState *game);
  * This does much the same thing as trimEndOfString except it does it to guess.
  * In this case a valid guess is only 1 character so the termination is assighend to hangmanGuess[1].
  * This is of course contingent on hangmanGuess having a length > 1
- * @param gameState *game, acts on char *hangmanGuess
+ * @param gameState *game, acts on char *hangmanGuess by ensuring its size is < 2
  * @return Void
  */
 void trimGuess(gameState *game);
@@ -132,7 +135,7 @@ void trimGuess(gameState *game);
  * hangmanAlreadyGuessed array's 26 possible entries can't overflow.
  * If the guess is new it adds it to the hangmanAlreadyGuessed array and increments
  * numberOfGuesses.
- * @param gameState *game
+ * @param gameState *game, assigns to char *hangmanGuess
  * @return Void
  */
 void getGuess(gameState *game);
@@ -145,7 +148,8 @@ void getGuess(gameState *game);
  * isGuessCorrect to 1.
  * If isGuessCorrect is still 0 once the loop is done hangmanStrikes is 
  * incremented.
- * @param gameState *game
+ * @param gameState *game, alters char *correctGuesses, can increment hangmanStrikes
+ *        sets isGuessCorrect
  * @return Void
  */
 void testGuess(gameState *game);
@@ -155,17 +159,17 @@ void testGuess(gameState *game);
  * Another simple loop through the hangmanAnswer and correctGuesses arrays
  * this is to aoid having to throw out anything with an apostrophe and 
  * roll a new word.
- * @param gameState game
+ * @param gameState *game, changes char *correctGuesses
  * @return Void
  */
-void addApostrophes(gameState game); 
+void addApostrophes(gameState *game); 
 
 /** @brief Tests if hangmanAnswer and correctGuesses are equal and sets isEnd
  *         to 1 if they're equal, ending the primary while loop.
  * Loops through hangmanAnswer and corectGuesses until answerLength addresses
  * and returns if there's a discrepancy.
  * If there are none it sets isEnd to 1 forcing the main loop to end.
- * @param gameState *game
+ * @param gameState *game, can set isEnd to 1
  * @return Void
  */
 void isGameOver(gameState *game);

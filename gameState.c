@@ -38,21 +38,29 @@ void answerLowerCase(gameState *game) {
 void getAnswer(gameState *game) {
     seedRandomizer();
     wordList words;
-    createEmptyWordList(&words);
-    getWordList(&words);
-    getWord(words, game);
-    trimEndOfString(game);
-    //printf("%s\n", game->hangmanAnswer); Reactivateable for testing purposes
+    if(game->randomizationScheme == 0) {
+        createEmptyWordList(&words);
+        getWordList(&words);
+        getWord(words, game);
+        trimEndOfString(game);
+        //printf("%s\n", game->hangmanAnswer); Reactivateable for testing purposes
+        destroyWordList(&words);
+        free(words.possibleAnswers);
+    }
+    else if(game->randomizationScheme == 1) {
+        seekWord(&words, game);
+    }
     game->answerLength = strlen(game->hangmanAnswer);
     fclose(words.wordListFile);
 }//Once answer is determined wordlist is a drain, fclose and free seem prudent but valgrind is reporting unfreed memory when I free(words->possibleAnswers) so definitely need more idea what that free will entail
 
 void createGameState(gameState *game) { //makes room to store guesses, sets a default value and an array to store already guessed letters
+    game->randomizationScheme = 1;
     getAnswer(game);//getAnswer called here to avoid an issue where both needed each other to exist to complete construction
     game->hangmanStrikes = 0;
-    game->hangmanGuess = malloc(1024);//healthy buffer size in case someone gets silly with howlong their guess is
+    game->hangmanGuess = malloc(1024);//healthy buffer size in case someone gets silly with how long their guess is
     game->hangmanGuess[0] = 'a';//safe default guess
-    game->correctGuesses = malloc(sizeof(char) * (game->answerLength));
+    game->correctGuesses = malloc(sizeof(char) * (game->answerLength + 1));
     game->hangmanAlreadyGuessed = malloc(26);
     game->isEnd = 0;//Just exists for the function that tracks if the game is over
     getUnderlines(game);
@@ -96,10 +104,10 @@ void testGuess(gameState *game) {
     }
 }
 
-void addApostrophes(gameState game) {
-    for (int letter = 0; letter < game.answerLength; letter++) {
-        if (game.hangmanAnswer[letter] == '\'') {
-            game.correctGuesses[letter] = '\''; //just slot in the apostrophes before the game even begins, since the player can't and shouldn't have to
+void addApostrophes(gameState *game) {
+    for (int letter = 0; letter < game->answerLength; letter++) {
+        if (game->hangmanAnswer[letter] == '\'') {
+            game->correctGuesses[letter] = '\''; //just slot in the apostrophes before the game even begins, since the player can't and shouldn't have to
         }
     }
 }
@@ -113,7 +121,7 @@ void isGameOver(gameState *game) {
     game->isEnd = 1;
 }
 
-int main() {
+/*int main() {
     gameState game;
     createGameState(&game);
     answerLowerCase(&game);
@@ -133,7 +141,7 @@ int main() {
     else {
         printf("Wow, you lose!\nCorrect answer was: %s\n", game.hangmanAnswer);
     }
-}
+}*/
 
 //TODO: Reject non alphabetical guesses
 //TODO: Insert apostrophes automatically
