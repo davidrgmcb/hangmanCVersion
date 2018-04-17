@@ -49,6 +49,7 @@ void getAnswer(gameState *game) {
     }
     else if(game->randomizationScheme == 1) {
         seekWord(&words, game);
+        trimEndOfString(game);
     }
     game->answerLength = strlen(game->hangmanAnswer);
     fclose(words.wordListFile);

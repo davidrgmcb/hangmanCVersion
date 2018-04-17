@@ -52,16 +52,16 @@ void seekWord(wordList *words, gameState *game) {
     char buffer[256];
     rewind(words->wordListFile);
     int fileRand = rand() % fileLength -1;
-    fseek(words->wordListFile, 0, (rand() % fileLength - 1));
+    fseek(words->wordListFile, fileRand, SEEK_SET);
     char *currentChar = fgets(buffer, 2, words->wordListFile);
     while(*currentChar != '\n' || currentChar == NULL){
-        printf("1 %s%ld\n%d", currentChar, ftell(words->wordListFile), fileLength);
+        //printf("1 %s%ld\n%d", currentChar, ftell(words->wordListFile), fileLength);
         fseek(words->wordListFile, -2, SEEK_CUR);
         currentChar = fgets(buffer, 2, words->wordListFile);
-        printf("2 %s%ld\n%d", currentChar, ftell(words->wordListFile), fileRand);
+        //printf("2 %s%ld\n%d", currentChar, ftell(words->wordListFile), fileRand);
     }
-    game->hangmanAnswer = fgets(buffer, 256, words->wordListFile);
-    //printf("%s", game->hangmanAnswer);
+    game->hangmanAnswer = strdup(fgets(buffer, 256, words->wordListFile));
+    printf("%s", game->hangmanAnswer);
     //char fake[] = "unrandom";
     //game->hangmanAnswer = strdup(fake);
 }
