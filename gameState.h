@@ -5,36 +5,28 @@
  * minus the core loop itself and the actual construction of a list to pick an answer from and the picking of that answer.
  * The struct containing possible answers and associated functions live in wordList.h and wordlist.c.
  * 
- * @bug trimEndOfString mysteriously nonfunctional.
+ * @author David McBurney
+ * @bug None I'm aware of.
  */
 
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
-/** @brief Struct containing all the information about player guesses and the correct answer.
+/** @struct gameState
+ * @brief Struct containing all the information about player guesses and the correct answer.
  * A struct meant to essentially hold everything to do with the game as an onogoing concern. 
- * Holds malloced char pointers to the current guess (hangmanGuess),
- * what has been guessed correctly so far (correctGuesses), 
- * everything that has been guessed (hangmanAlreadyGuessed),
- * and the answer itself (hangmanAnswer).
- * Also contains ints to track the total number of unique guesses (numberOfGuesses) which is used to keep hangmanAlreadyGuessed up to date,
- * the length of the answer (answerLength) which is necessary for any loop that compares to the answer,
- * a number of strikes (hangmanStrikes) which increments until it reaches a point where it stops the main loop, ending in a player loss.
- * The last two ints act as bools. isGuessCorrect and isEnd. Neither of those should ever be anything but 0 or 1.
- * isGuessCorrect is set to true in testGuess to avoid incrementing hangmanStrikes
- * isEnd is set to 1 in isGameOver when all the letters up to answerLength are equal exiting the loop into the win condition.
 */
 typedef struct {
-char *hangmanGuess;
-char *correctGuesses;
-char *hangmanAlreadyGuessed;
-char *hangmanAnswer;
-int numberOfGuesses;
-int answerLength;
-int hangmanStrikes;
-int isGuessCorrect;
-int isEnd;
-int randomizationScheme;
+char *hangmanGuess; /**< Holds malloced char pointer to the current guess. */
+char *correctGuesses; /**< Holds malloced char pointer to what has been guessed correctly so far. */
+char *hangmanAlreadyGuessed; /**< Holds malloced char pointer to everything that has been guessed. */
+char *hangmanAnswer; /**< Holds malloced char pointer to the answer itself. */
+int numberOfGuesses; /**< Int to track the total number of unique guesses which is used to keep hangmanAlreadyGuessed up to date. */
+int answerLength; /**< Int to track the length of the answer which is necessary for any loop that compares to the answer. */
+int hangmanStrikes; /**< Int to track the number of strikes which increments until it reaches a point where it stops the main loop, ending in a player loss.*/
+int isGuessCorrect; /**< Int that acts as a bool, set in isGuessCorrect to decide whether to increment hangmanStrikes. */
+int isEnd; /**< Int that acts as a bool, stays 0 unless set to 1 by isGameOver signalling player victory */
+int randomizationScheme; /**< Currently sets whether to use getAnswer or seekAnswer, could be expanded with more randomization schems I suppose*/
 }gameState;
 
 /** @brief Loops through string and replaces newline character with string termination.
@@ -173,5 +165,14 @@ void addApostrophes(gameState *game);
  * @return Void
  */
 void isGameOver(gameState *game);
+
+/**@brief Prints the actual hangman.
+ * Takes in game to test the value of hangmanStrikes.
+ * Prints an increasingly complete hangman the more strikes
+ * there are. Prints the full hangman and a lame joke at 7.
+ * @param gameState game, not a pointer, checks but doesn't modify hangmanStrikes.
+ * @return Void
+ */
+void printHangman(gameState game);
 
 #endif

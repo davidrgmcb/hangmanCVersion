@@ -3,7 +3,9 @@
  * wordList.h prototypes functions in wordList.c that control the wordList struct
  * the size of its possible answers array and the copying of new words into it
  * as well as the copying of a random word into the gameState struct
- * @bug no known bugs, wordList not properly freed though.
+ * 
+ * @author David McBurney
+ * @bug no known bugs.
  */
 
 #include <stdlib.h>
@@ -14,17 +16,14 @@
 #ifndef WORDLIST_H
 #define WORDLIST_H
 
-/** @brief Contains everything the wordlist needs to expand and track itself.
- * FILE pointer points to the file that will have words randomly pulled from.
- * char **possibleAnswers is an expandable malloced array of strings expanded
- * by expandArray. arraySize tracks the size of possibleAnswers so it is known
- * when to call expandArray. highestFilledArray tracks how much of possibleAnswers
- * is full and is compared to arraySize.*/
+/** @struct wordList
+ * @brief Contains everything the wordlist needs to expand and track itself.
+ */
 typedef struct {
-FILE *wordListFile;
-char **possibleAnswers;
-int arraySize;
-int highestFilledArrayAddress;
+FILE *wordListFile; /**< FILE pointer points to the file that will have words randomly pulled from.*/
+char **possibleAnswers; /**< char **possibleAnswers is an expandable malloced array of strings expanded by expandArray.*/
+int arraySize; /**<arraySize tracks the size of possibleAnswers so it is known when to call expandArray.*/
+int highestFilledArrayAddress; /**highestFilledArray tracks how much of possibleAnswers is full and is compared to arraySize.*/
 }wordList;
 
 #define ARRAY_FILL_START 0
@@ -49,7 +48,8 @@ void expandArray(wordList *words);
  *        at highestFilledArrayAddress stored in buffer from getWordList
  * Starts by comparing highestFilledArrayAddress to arraySize, if they are equal then expandArray
  * is called. Otherwise the string held in buffer is strduped to possibleWords{highestFilledArrayAddress].
- * @param wordList *words, adds words to char **possibleWords, char* buffer, copied into possibleWords.
+ * @param wordList *words, adds words to char **possibleWords, 
+ * @param char* buffer, copied into possibleWords.
  * @return Void
  */
 void addWord(wordList *words, char *buffer);
@@ -63,7 +63,8 @@ int wordListLength(wordList words);
 /** @brief Copies a string at a randomly chosen address in the possibleAnswers array
  *        into the hangmanAnswer char * in gameState *game
  * Pretty direct one line strdup
- * @param wordList words, nothing altered just copied from, gameState *game, string copied into char* hangmanAnswer
+ * @param wordList words, nothing altered just copied from 
+ * @param gameState *game, string copied into char* hangmanAnswer
  * @return Void
  */
 void getWord(wordList words, gameState *game);
@@ -98,7 +99,7 @@ void destroyWordList(wordList *words);
  * Once a valid position is found the resultant fgets is strduped to game.hangmanAnswer
  * wordListFile is closed in getAnswer.
  * @param wordList *words, opens wordListFile but otherwise uses little of it
- *        gameState *game, assigns hangmanAnswer.
+ * @param gameState *game, assigns hangmanAnswer.
  * @return Void
  */
 void seekWord(wordList *words, gameState *game);

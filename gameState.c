@@ -122,29 +122,26 @@ void isGameOver(gameState *game) {
     game->isEnd = 1;
 }
 
-/*int main() {
-    gameState game;
-    createGameState(&game);
-    answerLowerCase(&game);
-    addApostrophes(game);
-    printf("%s\n", game.correctGuesses);
-    while ((game.hangmanStrikes < 7) && (!game.isEnd)) { 
-        getGuess(&game);
-        printf("%s\n%d\n", game.hangmanGuess, game.numberOfGuesses);
-        testGuess(&game);
-        printf("%s\nStrikes: %d of 7\nPreviously Guessed: %s\n", game.correctGuesses, game.hangmanStrikes, game.hangmanAlreadyGuessed);
-        isGameOver(&game);
-        printf("%d\n", game.isEnd);
+void printHangman(gameState game) {
+    if (game.hangmanStrikes == 1) {
+        printf("________\n|       |\n|       O\n");
     }
-    if (game.isEnd == 1) {
-        printf("Wow, you win!\n");
+    else if (game.hangmanStrikes == 2) {
+        printf("________\n|       |\n|       O\n|       |\n");
     }
-    else {
-        printf("Wow, you lose!\nCorrect answer was: %s\n", game.hangmanAnswer);
+    else if (game.hangmanStrikes == 3) {
+        printf("________\n|       |\n|       O\n|     --|\n");
     }
-}*/
-
-//TODO: Reject non alphabetical guesses
-//TODO: Insert apostrophes automatically
-//TODO: check guess finish
-//Test answers with strcmp
+    else if (game.hangmanStrikes == 4) {
+        printf("________\n|       |\n|       O\n|     --|--\n");
+    }
+    else if (game.hangmanStrikes == 5) {
+        printf("________\n|       |\n|       O\n|     --|--\n|      /\n");
+    }
+    else if (game.hangmanStrikes == 6) {
+        printf("________\n|       |\n|       O\n|     --|--\n|      / \\\n");
+    }
+    else if (game.hangmanStrikes >= 7) {
+        printf("________\n|       |\n|       O\n|     --|--\n|      / \\ \n\n He's dead Jim\n");
+    }
+}
